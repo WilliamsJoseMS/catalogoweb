@@ -1,14 +1,16 @@
 // --- INICIALIZACIÓN Y CONFIGURACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     // Configuración de Firebase (la misma que en admin.js)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDWr3Q5l71IuVNknXRSFRooDmFDUYgNyDI",
-      authDomain: "catalogo-ia-e4060.firebaseapp.com",
-      projectId: "catalogo-ia-e4060",
-      storageBucket: "catalogo-ia-e4060.appspot.com",
-      messagingSenderId: "638377848217",
-      appId: "1:638377848217:web:57ac10f018a255b94f3708"
-    };
+   const firebaseConfig = {
+  apiKey: "AIzaSyDWr3Q5l71IuVNknXRSFRooDmFDUYgNyDI",
+  authDomain: "catalogo-ia-e4060.firebaseapp.com",
+  projectId: "catalogo-ia-e4060",
+  storageBucket: "catalogo-ia-e4060.appspot.com", // <-- CORRECCIÓN: Usa el que Firebase te da, que podría ser este...
+  // O el original que me pasaste:
+  // storageBucket: "catalogo-ia-e4060.firebasestorage.app", // <-- Intenta con este si el de arriba no funciona.
+  messagingSenderId: "638377848217",
+  appId: "1:638377848217:web:57ac10f018a255b94f3708"
+};
 
     // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
