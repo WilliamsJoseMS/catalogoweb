@@ -3,37 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo y Panel</title>
+    <title>Catálogo Dinámico</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body class="dark-mode">
 
-    <!-- SECCIÓN PARA AÑADIR PRODUCTOS (EL PANEL) -->
-    <div id="admin-section" class="container">
-        <!-- El indicador de estado va aquí -->
-        <div id="status-indicator" class="status-light"></div>
-        
-        <h1>Panel de Productos</h1>
-        <form id="product-form">
-            <input type="text" id="product-name" placeholder="Nombre del Producto" required>
-            <textarea id="product-desc" placeholder="Descripción del Producto"></textarea>
-            <input type="number" id="product-price" placeholder="Precio" step="0.01" required>
-            <label for="product-image">Imagen del Producto:</label>
-            <input type="file" id="product-image" accept="image/*" required>
-            <button type="submit">Agregar Producto</button>
-        </form>
-    </div>
+    <div class="main-container">
 
-    <!-- SECCIÓN PARA MOSTRAR PRODUCTOS (EL CATÁLOGO) -->
-    <div id="catalog-section" class="container">
-        <h1>Nuestro Catálogo</h1>
-        <div id="product-grid" class="product-grid">
-            <!-- Los productos se cargarán aquí dinámicamente -->
-            <p>Cargando productos...</p>
-        </div>
+        <!-- SECCIÓN PARA AÑADIR PRODUCTOS (EL PANEL) -->
+        <section id="admin-section" class="container">
+            <div class="header-container">
+                <h1>Panel de Productos</h1>
+                <div id="status-container" class="status-container">
+                    <div id="status-indicator" class="status-light"></div>
+                    <span id="status-text">Conectando...</span>
+                </div>
+            </div>
+            <form id="product-form">
+                <input type="text" id="product-name" placeholder="Nombre del Producto" required>
+                <textarea id="product-desc" placeholder="Descripción del Producto"></textarea>
+                <input type="number" id="product-price" placeholder="Precio" step="0.01" required>
+                <label for="product-image">Imagen del Producto:</label>
+                <input type="file" id="product-image" accept="image/*" required>
+                <button type="submit" id="submit-button">Agregar Producto</button>
+            </form>
+        </section>
+
+        <!-- SECCIÓN PARA MOSTRAR PRODUCTOS (EL CATÁLOGO) -->
+        <section id="catalog-section" class="container">
+            <h1>Nuestro Catálogo</h1>
+            <div id="product-grid" class="product-grid">
+                <!-- Los productos se cargarán aquí dinámicamente -->
+            </div>
+        </section>
+
     </div>
 
     <!-- SDKs de Firebase -->
