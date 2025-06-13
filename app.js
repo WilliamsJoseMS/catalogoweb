@@ -1,16 +1,14 @@
 // --- INICIALIZACIÓN Y CONFIGURACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     // Configuración de Firebase (la misma que en admin.js)
-   const firebaseConfig = {
-  apiKey: "AIzaSyDWr3Q5l71IuVNknXRSFRooDmFDUYgNyDI",
-  authDomain: "catalogo-ia-e4060.firebaseapp.com",
-  projectId: "catalogo-ia-e4060",
-  storageBucket: "catalogo-ia-e4060.appspot.com", // <-- CORRECCIÓN: Usa el que Firebase te da, que podría ser este...
-  // O el original que me pasaste:
-  // storageBucket: "catalogo-ia-e4060.firebasestorage.app", // <-- Intenta con este si el de arriba no funciona.
-  messagingSenderId: "638377848217",
-  appId: "1:638377848217:web:57ac10f018a255b94f3708"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDWr3Q5l71IuVNknXRSFRooDmFDUYgNyDI",
+      authDomain: "catalogo-ia-e4060.firebaseapp.com",
+      projectId: "catalogo-ia-e4060",
+      storageBucket: "catalogo-ia-e4060.appspot.com",
+      messagingSenderId: "638377848217",
+      appId: "1:638377848217:web:57ac10f018a255b94f3708"
+    };
 
     // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
@@ -32,33 +30,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const userButton = document.getElementById('user-button');
     const chatToggle = document.getElementById('chat-toggle');
     const chatWidget = document.getElementById('chat-widget');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const storeContainer = document.getElementById('store-container');
 
     // --- CARGA DE DATOS INICIAL ---
     async function loadStore() {
-        // Cargar configuración de la tienda
-        const settingsDoc = await db.collection('settings').doc('businessInfo').get();
-        if (settingsDoc.exists) {
-            const settings = settingsDoc.data();
-            document.title = settings.catalogName || 'Catálogo';
-            document.getElementById('store-logo').src = settings.logoUrl || '';
-            document.getElementById('store-logo').alt = settings.companyName || 'Logo';
-            document.getElementById('catalog-name').textContent = settings.catalogName || 'Nuestro Catálogo';
-            document.getElementById('company-name-footer').textContent = `© 2024 ${settings.companyName || ''}`;
-            document.getElementById('company-address').textContent = settings.address || '';
-            document.getElementById('company-phone').textContent = settings.contactPhone || '';
-            document.getElementById('company-email').textContent = settings.contactEmail || '';
-            document.getElementById('company-taxId').textContent = settings.taxId || '';
-        }
+        try {
+            // Cargar configuración de la tienda
+            const settingsDoc = await db.collection('settings').doc('businessInfo').get();
+            if (settingsDoc.exists) {
+                const settings = settingsDoc.data();
+                updateStoreUI(settings);
+            }
 
-        // Cargar productos
-        const productsSnapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
-        products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderProducts();
+            // Cargar productos
+            const productsSnapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+            products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderProducts();
+            
+            // Ocultar indicador de carga y mostrar tienda
+            loadingIndicator.classList.add('hidden');
+            storeContainer.classList.remove('hidden');
+
+        } catch (error) {
+            console.error("Error al cargar la tienda:", error);
+            loadingIndicator.innerHTML = `<h2>Error al cargar el catálogo. Por favor, revisa la consola (F12) o contacta al administrador.</h2><p>${error.message}</p>`;
+        }
     }
     
-    // --- RENDERIZADO ---
+    // --- RENDERIZADO Y ACTUALIZACIÓN DE UI ---
+    function updateStoreUI(settings) {
+        document.title = settings.catalogName || 'Catálogo';
+        document.getElementById('store-logo').src = settings.logoUrl || 'https://via.placeholder.com/150x50?text=Logo';
+        document.getElementById('store-logo').alt = settings.companyName || 'Logo';
+        document.getElementById('catalog-name').textContent = settings.catalogName || 'Nuestro Catálogo';
+        document.getElementById('company-name-footer').textContent = `© 2024 ${settings.companyName || ''}`;
+        document.getElementById('company-address').textContent = settings.address || '';
+        document.getElementById('company-phone').textContent = settings.contactPhone || '';
+        document.getElementById('company-email').textContent = settings.contactEmail || '';
+        document.getElementById('company-taxId').textContent = settings.taxId || '';
+    }
+    
     function renderProducts() {
         productGrid.innerHTML = '';
+        if (products.length === 0) {
+            productGrid.innerHTML = '<p>No hay productos disponibles en este momento.</p>';
+            return;
+        }
         products.forEach(product => {
             const card = document.createElement('div');
             card.className = 'product-card';
@@ -85,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cartItemsContainer.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <div class="cart-item-info">
-                        <img src="${item.imageUrl}" alt="${item.name}">
+                        <img src="${item.imageUrl || 'https://via.placeholder.com/50'}" alt="${item.name}">
                         <div>
                             <strong>${item.name}</strong><br>
                             <span>${item.quantity} x $${item.price.toFixed(2)}</span>
@@ -116,6 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DE FUNCIONALIDADES ---
     function addToCart(productId) {
         const product = products.find(p => p.id === productId);
+        if (!product) return;
+        
         const cartItem = cart.find(item => item.id === productId);
 
         if (cartItem) {
@@ -156,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const docRef = await db.collection('orders').add(order);
-            alert(`¡Pedido #${docRef.id.substring(0,6)} realizado con éxito! Te hemos enviado un PDF de confirmación.`);
+            alert(`¡Pedido realizado con éxito! Recibirás una confirmación. Número de pedido: #${docRef.id.substring(0,6)}`);
             cart = [];
             renderCart();
             closeModal(cartModal);
@@ -182,8 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
             authContainer.innerHTML = `
                 <h2>Bienvenido, ${currentUser.displayName || currentUser.email}</h2>
                 <p>Aquí puedes ver tu historial de pedidos.</p>
-                <div id="order-history"></div>
-                <button id="logout-btn-user">Cerrar Sesión</button>
+                <div id="order-history">Cargando historial...</div>
+                <button id="logout-btn-user" style="margin-top: 20px;">Cerrar Sesión</button>
             `;
             loadOrderHistory();
             document.getElementById('logout-btn-user').addEventListener('click', () => auth.signOut());
@@ -208,26 +228,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>¿Ya tienes cuenta? <a href="#" id="show-login">Inicia Sesión</a></p>
                 </div>
             `;
-            // Attach event listeners for auth forms
-            document.getElementById('show-register').addEventListener('click', () => {
+            document.getElementById('show-register').addEventListener('click', (e) => {
+                e.preventDefault();
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('register-view').classList.remove('hidden');
             });
-            document.getElementById('show-login').addEventListener('click', () => {
+            document.getElementById('show-login').addEventListener('click', (e) => {
+                e.preventDefault();
                 document.getElementById('register-view').classList.add('hidden');
                 document.getElementById('login-view').classList.remove('hidden');
             });
             document.getElementById('login-form-user').addEventListener('submit', e => {
                 e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                auth.signInWithEmailAndPassword(email, password).catch(err => alert(err.message));
+                auth.signInWithEmailAndPassword(e.target.elements['login-email'].value, e.target.elements['login-password'].value).catch(err => alert(err.message));
             });
             document.getElementById('register-form-user').addEventListener('submit', e => {
                 e.preventDefault();
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                auth.createUserWithEmailAndPassword(email, password).catch(err => alert(err.message));
+                auth.createUserWithEmailAndPassword(e.target.elements['register-email'].value, e.target.elements['register-password'].value).catch(err => alert(err.message));
             });
         }
     }
@@ -235,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadOrderHistory() {
         const historyContainer = document.getElementById('order-history');
         if (!currentUser || !historyContainer) return;
-        historyContainer.innerHTML = 'Cargando...';
+
         const snapshot = await db.collection('orders').where('customer.id', '==', currentUser.uid).orderBy('timestamp', 'desc').get();
         if (snapshot.empty) {
             historyContainer.innerHTML = '<p>No has realizado pedidos.</p>';
@@ -243,8 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
             historyContainer.innerHTML = snapshot.docs.map(doc => {
                 const order = doc.data();
                 return `
-                    <div class="list-item">
-                        Pedido #${doc.id.substring(0,6)} - ${order.timestamp.toDate().toLocaleDateString()} - $${order.total.toFixed(2)}
+                    <div class="list-item" style="font-size: 0.9rem;">
+                        Pedido #${doc.id.substring(0,6)} | ${order.timestamp.toDate().toLocaleDateString()} | <strong>$${order.total.toFixed(2)}</strong>
                     </div>
                 `;
             }).join('');
@@ -253,33 +270,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- LÓGICA DEL CHATBOT ---
     const chatForm = document.getElementById('chat-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatMessages = document.getElementById('chat-messages');
-    
     chatForm.addEventListener('submit', async e => {
         e.preventDefault();
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
-        addChatMessage(userMessage, 'user');
+        addChatMessage(userMessage, 'user', chatMessages);
         chatInput.value = '';
-        addChatMessage('', 'loading'); // Show loading indicator
+        addChatMessage('', 'loading', chatMessages);
 
         try {
-            // ¡Llamada a la Cloud Function!
             const askGemini = functions.httpsCallable('askGemini');
             const result = await askGemini({ question: userMessage });
             
-            document.querySelector('.message.loading').remove(); // Remove loading indicator
-            addChatMessage(result.data.answer, 'ai');
+            document.querySelector('.message.loading').remove();
+            addChatMessage(result.data.answer, 'ai', chatMessages);
         } catch (error) {
             console.error("Error llamando a la función de Gemini:", error);
             document.querySelector('.message.loading').remove();
-            addChatMessage('Lo siento, no puedo responder en este momento.', 'ai');
+            addChatMessage('Lo siento, el asistente no está disponible en este momento.', 'ai', chatMessages);
         }
     });
     
-    function addChatMessage(text, type) {
+    function addChatMessage(text, type, container) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
         if (type === 'loading') {
@@ -287,8 +302,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             messageDiv.textContent = text;
         }
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        container.appendChild(messageDiv);
+        container.scrollTop = container.scrollHeight;
     }
 
     // --- LÓGICA DEL TEMA (MODO OSCURO/CLARO) ---
@@ -315,31 +330,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- EVENT LISTENERS GLOBALES ---
-    document.addEventListener('click', (e) => {
-        // Añadir al carrito
-        if (e.target.matches('.add-to-cart-btn')) {
-            addToCart(e.target.dataset.id);
-        }
-        // Quitar del carrito
-        if (e.target.matches('.remove-from-cart-btn')) {
-            removeFromCart(e.target.dataset.id);
-        }
-        // Cerrar modales
-        if (e.target.matches('.modal-close-btn')) {
-            closeModal(e.target.closest('.modal-overlay'));
-        }
-        // Finalizar pedido
-        if (e.target.matches('#checkout-btn')) {
-            placeOrder();
-        }
+    document.body.addEventListener('click', (e) => {
+        if (e.target.matches('.add-to-cart-btn')) addToCart(e.target.dataset.id);
+        if (e.target.matches('.remove-from-cart-btn')) removeFromCart(e.target.dataset.id);
+        if (e.target.matches('.modal-close-btn')) closeModal(e.target.closest('.modal-overlay'));
+        if (e.target.matches('#checkout-btn')) placeOrder();
     });
     
     cartButton.addEventListener('click', () => openModal(cartModal));
     userButton.addEventListener('click', () => openModal(userModal));
-    chatToggle.addEventListener('click', () => chatWidget.classList.remove('hidden'));
+    chatToggle.addEventListener('click', () => chatWidget.classList.toggle('hidden'));
     document.querySelector('.chat-close-btn').addEventListener('click', () => chatWidget.classList.add('hidden'));
 
-    // --- INICIO ---
+    // --- INICIO DE LA APLICACIÓN ---
     loadStore();
     renderCart();
     applyTheme(localStorage.getItem('theme') || 'dark');
