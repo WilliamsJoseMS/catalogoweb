@@ -1,47 +1,216 @@
-/* --- INDICADOR DE ESTADO --- */
+/* --- VARIABLES Y CONFIGURACIÓN GLOBAL --- */
+:root {
+    --bg-dark-gradient: linear-gradient(145deg, #0d1120 0%, #1a1a2e 100%);
+    --surface-dark: rgba(26, 26, 46, 0.6);
+    --primary-glow: #00ffff;
+    --secondary-glow: #e040fb;
+    --text-light: #e0e0e0;
+    --font-main: 'Roboto', sans-serif;
+    --font-display: 'Orbitron', sans-serif;
+    --border-radius: 15px;
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--bg-dark-gradient);
+    color: var(--text-light);
+    margin: 0;
+    padding: 2rem;
+    overflow-x: hidden;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    background: var(--surface-dark);
+    border: 1px solid var(--primary-glow);
+    box-shadow: 0 0 35px rgba(0, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    transition: transform var(--transition-speed) ease;
+    animation: fadeInSlideUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- CABECERAS Y TÍTULOS --- */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    padding-bottom: 1rem;
+}
+
+h1 {
+    font-family: var(--font-display);
+    color: var(--primary-glow);
+    text-shadow: 0 0 8px var(--primary-glow);
+    margin: 0;
+}
+
+/* --- INDICADOR DE ESTADO MEJORADO --- */
+.status-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.3);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all var(--transition-speed);
+}
 .status-light {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    box-shadow: 0 0 8px, 0 0 12px, 0 0 16px;
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
     animation: blink 1.5s infinite ease-in-out;
 }
-
-/* Color inicial (ámbar/amarillo) mientras se intenta conectar */
-.status-light {
-    background-color: #ffbf00; /* Ámbar */
-    color: #ffbf00;
-}
-
-/* Clase para estado conectado (mantiene el ámbar) */
 .status-light.connected {
     background-color: #ffbf00; /* Ámbar */
-    color: #ffbf00;
+    box-shadow: 0 0 8px #ffbf00, 0 0 12px #ffbf00;
 }
-
-/* Clase para estado desconectado (rojo) */
 .status-light.disconnected {
-    background-color: #ff0000; /* Rojo */
-    color: #ff0000;
-    animation-duration: 1s; /* Parpadeo más rápido para errores */
+    background-color: #ff3b3b; /* Rojo */
+    box-shadow: 0 0 8px #ff3b3b, 0 0 12px #ff3b3b;
+    animation-duration: 0.8s;
+}
+#status-text {
+    font-weight: 300;
 }
 
-/* Animación de parpadeo */
 @keyframes blink {
-    0%, 100% {
+    50% { opacity: 0.4; }
+}
+
+/* --- FORMULARIO CON ESTILO --- */
+form { display: grid; gap: 1rem; }
+input, textarea, button {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(10, 10, 26, 0.7);
+    border: 1px solid var(--primary-glow);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all var(--transition-speed);
+}
+input:focus, textarea:focus {
+    outline: none;
+    box-shadow: 0 0 12px var(--primary-glow);
+    transform: scale(1.02);
+}
+textarea { resize: vertical; min-height: 80px; }
+button {
+    background: var(--primary-glow);
+    color: var(--bg-dark);
+    font-family: var(--font-display);
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+button:hover {
+    background: white;
+    box-shadow: 0 0 20px var(--primary-glow);
+    transform: translateY(-3px);
+}
+button:active {
+    transform: translateY(-1px);
+}
+
+/* --- CATÁLOGO Y TARJETAS DE PRODUCTO ANIMADAS --- */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    min-height: 100px; /* Evita que colapse al estar vacío */
+}
+.product-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--primary-glow);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    /* Animación de entrada para cada tarjeta */
+    opacity: 0;
+    transform: scale(0.9);
+    animation: scaleIn 0.5s ease-out forwards;
+}
+
+@keyframes scaleIn {
+    to {
         opacity: 1;
-        box-shadow: 0 0 8px, 0 0 12px, 0 0 16px;
-    }
-    50% {
-        opacity: 0.3;
-        box-shadow: none;
+        transform: scale(1);
     }
 }
 
-/* Ajuste para que el contenedor del panel sea relativo */
-#admin-section.container {
-    position: relative;
+.product-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+}
+.product-image-container {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.product-card:hover .product-image {
+    transform: scale(1.1);
+}
+.product-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.product-info h3 {
+    font-family: var(--font-display);
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    color: white;
+}
+.product-info p {
+    flex-grow: 1;
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    opacity: 0.8;
+    line-height: 1.5;
+}
+.product-price {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--primary-glow);
+    text-shadow: 0 0 5px var(--primary-glow);
+    align-self: flex-end;
 }
