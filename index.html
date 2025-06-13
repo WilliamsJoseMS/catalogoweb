@@ -3,103 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Interactivo</title> <!-- Se actualizará dinámicamente -->
+    <title>Catálogo y Panel</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
 </head>
 <body class="dark-mode">
 
-    <!-- ===== HEADER ===== -->
-    <header class="store-header">
-        <img src="https://via.placeholder.com/150x50?text=Logo" alt="Logo de la empresa" id="store-logo">
-        <div class="header-actions">
-            <button id="theme-toggle" class="icon-btn" title="Cambiar tema">
-                <!-- SVG del ícono del tema se insertará aquí -->
-            </button>
-            <button id="cart-button" class="icon-btn" title="Carrito de compras">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c.51 0 .962-.344 1.087-.835l1.823-6.812a1.5 1.5 0 00-1.423-2.08H6.164L5.49 3.322A1.125 1.125 0 004.364 2.25H3v1.5zM16.5 21a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-9 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
-                <span id="cart-count" class="cart-badge hidden">0</span>
-            </button>
-            <button id="user-button" class="icon-btn" title="Iniciar Sesión / Perfil">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            </button>
-        </div>
-    </header>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <main id="store-container" class="container hidden">
-        <h1 id="catalog-name">Nuestro Catálogo</h1>
-        <div id="product-grid" class="product-grid">
-            <!-- Los productos se cargarán aquí -->
-        </div>
-    </main>
-    
-    <div id="loading-indicator" class="container">
-        <h2>Cargando Catálogo...</h2>
-    </div>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="store-footer">
-        <p id="company-name-footer">© 2024 Nombre de la Empresa</p>
-        <p id="company-address">Dirección de la empresa</p>
-        <p><span id="company-phone"></span> | <span id="company-email"></span></p>
-        <p>RIF: <span id="company-taxId"></span></p>
-    </footer>
-
-    <!-- ===== FLOATING CHAT BUTTON ===== -->
-    <button id="chat-toggle" class="chat-toggle-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
-    </button>
-    
-    <!-- ===== MODALS AND WIDGETS (Initially hidden) ===== -->
-    
-    <!-- Cart Modal -->
-    <div id="cart-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="modal-close-btn">×</button>
-            <h2>Tu Carrito de Compras</h2>
-            <div id="cart-items"></div>
-            <div class="cart-total">
-                <strong>Total:</strong> <span id="cart-total-price">$0.00</span>
-            </div>
-            <button id="checkout-btn" class="checkout-button">Finalizar Pedido</button>
-        </div>
-    </div>
-
-    <!-- User/Login Modal -->
-    <div id="user-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="modal-close-btn">×</button>
-            <div id="auth-container">
-                <!-- Contenido de login/registro/perfil se inserta aquí -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Chat Widget -->
-    <div id="chat-widget" class="chat-widget hidden">
-        <div class="chat-header">
-            <h3>Asistente Virtual</h3>
-            <button class="chat-close-btn">×</button>
-        </div>
-        <div id="chat-messages" class="chat-messages">
-             <div class="message ai">¡Hola! Soy tu asistente de compras. ¿En qué puedo ayudarte?</div>
-        </div>
-        <form id="chat-form" class="chat-input-form">
-            <input type="text" id="chat-input" placeholder="Escribe tu pregunta..." autocomplete="off">
-            <button type="submit">Enviar</button>
+    <!-- SECCIÓN PARA AÑADIR PRODUCTOS (EL PANEL) -->
+    <div id="admin-section" class="container">
+        <h1>Panel de Productos</h1>
+        <form id="product-form">
+            <input type="text" id="product-name" placeholder="Nombre del Producto" required>
+            <textarea id="product-desc" placeholder="Descripción del Producto"></textarea>
+            <input type="number" id="product-price" placeholder="Precio" step="0.01" required>
+            <label for="product-image">Imagen del Producto:</label>
+            <input type="file" id="product-image" accept="image/*" required>
+            <button type="submit">Agregar Producto</button>
         </form>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- SECCIÓN PARA MOSTRAR PRODUCTOS (EL CATÁLOGO) -->
+    <div id="catalog-section" class="container">
+        <h1>Nuestro Catálogo</h1>
+        <div id="product-grid" class="product-grid">
+            <!-- Los productos se cargarán aquí dinámicamente -->
+            <p>Cargando productos...</p>
+        </div>
+    </div>
+
+    <!-- SDKs de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     
-    <!-- Tu script principal -->
-    <script src="app.js"></script>
+    <!-- Nuestro script principal -->
+    <script src="script.js"></script>
 </body>
 </html>
