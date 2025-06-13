@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body class="dark-mode">
+
+    <div id="login-container" class="container">
+        <h1>Acceso Administrador</h1>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Correo Electrónico" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+            <p id="login-error" class="error-message hidden"></p>
+        </form>
+    </div>
+
+    <div id="admin-panel" class="container hidden">
+        <header>
+            <h1>Panel de Control</h1>
+            <button id="logout-btn">Cerrar Sesión</button>
+        </header>
+        
+        <main class="tabs">
+            <div class="tab-nav">
+                <button class="tab-link active" onclick="openTab(event, 'products')">📦 Productos</button>
+                <button class="tab-link" onclick="openTab(event, 'settings')">⚙️ Configuración</button>
+                <button class="tab-link" onclick="openTab(event, 'ai-training')">🧠 Entrenamiento IA</button>
+                <button class="tab-link" onclick="openTab(event, 'orders')">📋 Pedidos</button>
+            </div>
+
+            <!-- Gestión de Productos -->
+            <div id="products" class="tab-content active">
+                <h2>Gestionar Productos</h2>
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <input type="text" id="product-name" placeholder="Nombre del Producto" required>
+                    <textarea id="product-desc" placeholder="Descripción"></textarea>
+                    <input type="number" id="product-price" placeholder="Precio" step="0.01" required>
+                    <input type="file" id="product-image" accept="image/*">
+                    <button type="submit">Guardar Producto</button>
+                </form>
+                <div id="product-list" class="list-container"></div>
+            </div>
+
+            <!-- Configuración de la Tienda -->
+            <div id="settings" class="tab-content">
+                <h2>Configuración de la Tienda</h2>
+                <form id="settings-form">
+                    <input type="text" id="companyName" placeholder="Nombre de la Empresa">
+                    <input type="text" id="catalogName" placeholder="Nombre del Catálogo">
+                    <input type="text" id="contactPhone" placeholder="Teléfono de Contacto">
+                    <input type="email" id="contactEmail" placeholder="Correo de Contacto">
+                    <input type="text" id="taxId" placeholder="RIF / ID Fiscal">
+                    <textarea id="address" placeholder="Dirección Fiscal"></textarea>
+                    <input type="url" id="whatsappLink" placeholder="Enlace de WhatsApp (ej: https://wa.me/584121234567)">
+                    <label>Logo de la Empresa:</label>
+                    <input type="file" id="logoUpload" accept="image/*">
+                    <img id="logo-preview" src="" alt="Vista previa del logo" class="logo-preview">
+                    <button type="submit">Guardar Configuración</button>
+                </form>
+            </div>
+
+            <!-- Entrenamiento IA -->
+            <div id="ai-training" class="tab-content">
+                <h2>Base de Conocimiento del Chatbot (IA)</h2>
+                <p>Escribe aquí toda la información que quieres que el chatbot sepa: políticas de envío, devoluciones, horarios, preguntas frecuentes, detalles de productos, etc.</p>
+                <form id="ai-form">
+                    <textarea id="ai-knowledge" rows="20" placeholder="Ej: Nuestros envíos son a nivel nacional y tardan de 3 a 5 días hábiles..."></textarea>
+                    <button type="submit">Guardar Conocimiento</button>
+                </form>
+            </div>
+
+            <!-- Pedidos -->
+            <div id="orders" class="tab-content">
+                <h2>Pedidos Recibidos</h2>
+                <div id="order-list" class="list-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs - Usaremos la versión 8 para simplificar la sintaxis para este tutorial -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
+    
+    <!-- Tu script principal -->
+    <script src="admin.js"></script>
+
+    <!-- Script para funcionalidad de pestañas -->
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-link");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        // Inicia abriendo la primera pestaña por defecto
+        document.querySelector(".tab-link").click(); 
+    </script>
+</body>
+</html>
